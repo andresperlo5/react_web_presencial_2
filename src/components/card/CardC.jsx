@@ -1,18 +1,21 @@
 import { Container } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import "./CardC.css"
 
-const CardC = ({ urlImagen, textAlt, id }) => {
+const CardC = ({ urlImagen, textAlt, id, titulo, descripcion, precio }) => {
 
   return (
     <>
       <Card>
         <Card.Img variant="top" src={urlImagen} alt={textAlt} />
         <Card.Body>
-          <Card.Title>Card Title</Card.Title>
+          <Card.Title className='text-truncate'>{titulo}</Card.Title>
           <Card.Text>
-            Some quick example text to build on the card title and make up the
-            bulk of the card's content.
+            ${precio}
+          </Card.Text>
+          <Card.Text className='text-truncate'>
+            {descripcion}
           </Card.Text>
           <Container className='text-center'>
             <a href={`/productDetail/${id}`} className='btn btn-primary'>Ver Mas</a>

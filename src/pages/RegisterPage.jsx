@@ -1,8 +1,13 @@
-import React from 'react'
+import FormC from '../components/form/FormC'
+import { Container } from 'react-bootstrap'
 
 const RegisterPage = () => {
   return (
-    <div>RegisterPage</div>
+    <>
+      <Container className='d-flex justify-content-center my-5'>
+        <FormC idPage="register" />
+      </Container>
+    </>
   )
 }
 
