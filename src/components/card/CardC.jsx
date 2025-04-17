@@ -1,5 +1,4 @@
 import { Container } from 'react-bootstrap';
-import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import "./CardC.css"
 
@@ -18,7 +17,7 @@ const CardC = ({ urlImagen, textAlt, id, titulo, descripcion, precio }) => {
             {descripcion}
           </Card.Text>
           <Container className='text-center'>
-            <a href={`/productDetail/${id}`} className='btn btn-primary'>Ver Mas</a>
+            <Link to={`/productDetail/${id}`} className='btn btn-primary'>Ver Mas</Link>
           </Container>
         </Card.Body>
       </Card>
