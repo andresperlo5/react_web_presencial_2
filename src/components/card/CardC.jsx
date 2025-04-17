@@ -1,6 +1,7 @@
 import { Container } from 'react-bootstrap';
 import Card from 'react-bootstrap/Card';
 import "./CardC.css"
+import { Link } from 'react-router';
 
 const CardC = ({ urlImagen, textAlt, id, titulo, descripcion, precio }) => {
 
