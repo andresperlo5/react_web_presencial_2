@@ -100,7 +100,7 @@ const TableC = ({ idPage, array, obtenerTodosLosProductos, usuarioLogueado }) =>
             array.map((element, i) =>
               idPage === "usuarios"
                 ?
-                <tr key={element.id}>
+                <tr key={element._id}>
                   <td>{i + 1}</td>
                   <td>{element.nombreUsuario}</td>
                   <td>{element.rol}</td>
@@ -111,14 +111,14 @@ const TableC = ({ idPage, array, obtenerTodosLosProductos, usuarioLogueado }) =>
                   </td>
                 </tr>
                 :
-                element.status === "enabled" &&
-                <tr key={element.id}>
+                element.habilitado === false &&
+                <tr key={element._id}>
                   <td>{i + 1}</td>
-                  <td className='w-25'>{element.title}</td>
-                  <td>${element.price}</td>
-                  <td className='w-25'>{element.description}</td>
+                  <td className='w-25'>{element.nombre}</td>
+                  <td>${element.precio}</td>
+                  <td className='w-25'>{element.descripcion}</td>
                   <td>
-                    <img src={element.image} alt="" width={50} />
+                    <img src={element.imagen} alt="" width={50} />
                   </td>
                   <td className='w-50'>
                     <Link className='btn btn-warning' to={usuarioLogueado ? `/admin/products/createEdit?id=${element.id}` : "#"} variant='warning'>Editar</Link>

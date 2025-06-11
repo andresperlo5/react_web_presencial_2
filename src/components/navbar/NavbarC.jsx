@@ -5,17 +5,13 @@ import { NavLink, useNavigate } from 'react-router';
 
 const NavbarC = () => {
   const navigate = useNavigate()
-  const usuariosLog = JSON.parse(sessionStorage.getItem("usuario"))
+  const token = JSON.parse(sessionStorage.getItem("token"))
+  const usuariosLogRol = JSON.parse(sessionStorage.getItem("rol"))
 
   const cerrarSesion = (ev) => {
     ev.preventDefault()
-    const usuariosLs = JSON.parse(localStorage.getItem("usuarios"))
-    const usuario = usuariosLs.find((user) => user.id === usuariosLog.id)
-    usuario.login = false
-
-    localStorage.setItem("usuarios", JSON.stringify(usuariosLs))
-
-    sessionStorage.removeItem("usuario")
+    sessionStorage.removeItem("token")
+    sessionStorage.removeItem("rol")
 
     setTimeout(() => {
       navigate("/")
@@ -28,11 +24,11 @@ const NavbarC = () => {
     <>
       <Navbar expand="lg" className="bg-body-tertiary">
         <Container>
-          <NavLink className={"nav-link"} to={usuariosLog && usuariosLog.rol === "usuario" ? "/user" : usuariosLog && usuariosLog.rol === "admin" ? "/admin" : "/"}>Logo</NavLink>
+          <NavLink className={"nav-link"} to={token && usuariosLogRol === "usuario" ? "/user" : token && usuariosLogRol === "admin" ? "/admin" : "/"}>Logo</NavLink>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             {
-              usuariosLog && usuariosLog.rol === "usuario"
+              token && usuariosLogRol === "usuario"
                 ?
                 <Nav className="ms-auto">
                   <NavLink className={"nav-link"} to="/user">Inicio</NavLink>
@@ -41,7 +37,7 @@ const NavbarC = () => {
                   <NavLink className={"nav-link"} to="/contact">Favoritos</NavLink>
                 </Nav>
                 :
-                usuariosLog && usuariosLog.rol === "admin"
+                token && usuariosLogRol === "admin"
                   ?
                   <Nav className="ms-auto">
                     <NavLink className={"nav-link"} to="/admin">Inicio</NavLink>
@@ -56,7 +52,7 @@ const NavbarC = () => {
                   </Nav>
             }
             {
-              usuariosLog
+              token
                 ?
                 <Nav className="ms-auto">
                   <NavLink className={"nav-link"} to="#" onClick={cerrarSesion}>Cerrar Sesion</NavLink>

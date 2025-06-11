@@ -5,9 +5,11 @@ import { useEffect, useState } from 'react'
 const AdminUsersPage = () => {
   const [usuarios, setUsuarios] = useState([])
 
-  const obtenerTodosLosUsuarios = () => {
-    const usuariosLs = JSON.parse(localStorage.getItem("usuarios")) || []
-    setUsuarios(usuariosLs)
+  const obtenerTodosLosUsuarios = async () => {
+    const usuarios = await fetch("http://localhost:3001/usuarios")
+    const data = await usuarios.json()
+    console.log(data)
+    setUsuarios(data.usuarios)
   }
 
 

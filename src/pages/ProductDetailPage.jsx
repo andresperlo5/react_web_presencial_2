@@ -12,10 +12,10 @@ const ProductDetailPage = () => {
 
   const obtenerProducto = async () => {
     try {
-      const producto = await fetch(`https://fakestoreapi.com/products/${id}`)
+      const producto = await fetch(`http://localhost:3001/productos/${id}`)
       const data = await producto.json()
       console.log(data)
-      setProducto(data)
+      setProducto(data.producto)
     } catch (error) {
       console.log(error)
     }
@@ -62,12 +62,12 @@ const ProductDetailPage = () => {
       <Container className="my-5">
         <Row>
           <Col sm="12" md="6" className="producto-imagen text-center">
-            <img src={producto.image} alt={producto.title} />
+            <img src={producto.imagen} alt={producto.title} />
           </Col>
           <Col sm="12" md="6">
-            <h2>{producto.title}</h2>
-            <p>${producto.price}</p>
-            <p>{producto.description}</p>
+            <h2>{producto.nombre}</h2>
+            <p>${producto.precio}</p>
+            <p>{producto.descripcion}</p>
             <Button variant="warning" className="me-2" onClick={handleClickCart}>Añadir Carrito</Button>
             <Button variant="success" onClick={handleClickPay}>Comprar</Button>
           </Col>

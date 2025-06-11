@@ -5,11 +5,13 @@ import { Link } from 'react-router'
 
 const AdminProductsPage = () => {
   const [productos, setProductos] = useState([])
-  const usuarioLogueado = JSON.parse(sessionStorage.getItem("usuario")) || null
+  const usuarioLogueado = JSON.parse(sessionStorage.getItem("token")) || null
 
-  const obtenerTodosLosProductos = () => {
-    const productosLs = JSON.parse(localStorage.getItem("productos")) || []
-    setProductos(productosLs)
+  const obtenerTodosLosProductos = async () => {
+    const productos = await fetch("http://localhost:3001/productos")
+    const data = await productos.json()
+    console.log(data.productos)
+    setProductos(data.productos)
   }
 
   useEffect(() => {

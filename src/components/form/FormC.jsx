@@ -26,7 +26,7 @@ const FormC = ({ idPage }) => {
     setFormRegister({ ...formRegister, [ev.target.name]: value })
   }
 
-  const handleClickFormRegister = (ev) => {
+  const handleClickFormRegister = async (ev) => {
     ev.preventDefault()
     const erroresReg = {}
     const { nombreUsuario, emailUsuario, contrasenia, repContrasenia, terminosCondiciones } = formRegister
@@ -56,27 +56,26 @@ const FormC = ({ idPage }) => {
 
     if (nombreUsuario && emailUsuario && contrasenia && repContrasenia && terminosCondiciones) {
       if (contrasenia === repContrasenia) {
-        const usuarioLs = JSON.parse(localStorage.getItem("usuarios")) || []
+        const usuario = await fetch("http://localhost:3001/usuarios", {
+          method: "POST",
+          headers: {
+            "content-type": "application/json"
+          },
+          body: JSON.stringify({
+            nombreUsuario,
+            emailUsuario,
+            contrasenia
+          })
+        })
 
-        const nuevoUsuario = {
-          id: usuarioLs[usuarioLs.length - 1]?.id + 1 || 1,
-          nombreUsuario,
-          emailUsuario,
-          contrasenia,
-          terminosCondiciones,
-          rol: "admin",
-          login: false,
-          carrito: []
-        }
+        const data = await usuario.json()
+        console.log(data)
 
         Swal.fire({
-          title: "Registro Exitoso!",
+          title: `${data.msg}`,
           text: "En breve recibiras un email de confirmacion!",
           icon: "success"
         });
-
-        usuarioLs.push(nuevoUsuario)
-        localStorage.setItem("usuarios", JSON.stringify(usuarioLs))
 
         setFormRegister({
           nombreUsuario: "",
@@ -103,7 +102,7 @@ const FormC = ({ idPage }) => {
     setFormLogin({ ...formLogin, [ev.target.name]: ev.target.value })
   }
 
-  const handleClickFormLogin = (ev) => {
+  const handleClickFormLogin = async (ev) => {
     ev.preventDefault()
     const erroresLog = {}
 
@@ -118,30 +117,38 @@ const FormC = ({ idPage }) => {
     }
 
     if (nombreUsuario && contrasenia) {
-      const usuariosLs = JSON.parse(localStorage.getItem("usuarios"))
-      const usuarioExiste = usuariosLs.find((user) => user.nombreUsuario === nombreUsuario)
+      const usuarioLogueado = await fetch("http://localhost:3001/usuarios/login", {
+        method: "POST",
+        headers: {
+          "content-type": "application/json",
+        },
+        body: JSON.stringify({
+          nombreUsuario,
+          contrasenia
+        })
+      })
 
-      if (!usuarioExiste) {
-        Swal.fire({
-          icon: "error",
-          title: "El usuario y/o contraseña no son correctos",
-        });
+      const data = await usuarioLogueado.json()
+      sessionStorage.setItem("token", JSON.stringify(data.token))
+      sessionStorage.setItem("rol", JSON.stringify(data.rol))
+
+      Swal.fire({
+        icon: "success",
+        title: `${data.msg}`,
+      });
+
+
+      if (data.rol === "usuario") {
+        setTimeout(() => {
+          navigate("/user")
+        }, 1000);
       } else {
-        if (usuarioExiste.contrasenia === contrasenia) {
-          usuarioExiste.login = true
-          localStorage.setItem("usuarios", JSON.stringify(usuariosLs))
-          sessionStorage.setItem("usuario", JSON.stringify(usuarioExiste))
-          if (usuarioExiste.rol === "admin") {
-            setTimeout(() => {
-              navigate("/admin")
-            }, 1500);
-          } else {
-            setTimeout(() => {
-              navigate("/user")
-            }, 1500);
-          }
-        }
+        setTimeout(() => {
+          navigate("/admin")
+        }, 1000);
       }
+
+      console.log(data)
     }
 
   }

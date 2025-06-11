@@ -10,20 +10,9 @@ const HomePage = () => {
 
   const obtenerProductosApi = async () => {
     try {
-      const productoLs = JSON.parse(localStorage.getItem("productos")) || []
-      if (productoLs.length) {
-        setProductos(productoLs)
-      } else {
-        const productos = await fetch("https://fakestoreapi.com/products")
-        const productosConEstado = []
-        const data = await productos.json()
-        data.forEach(element => {
-          productosConEstado.push({ ...element, status: "enabled" })
-        });
-        localStorage.setItem("productos", JSON.stringify(productosConEstado))
-        setProductos(productosConEstado)
-      }
-
+      const productosApi = await fetch("http://localhost:3001/productos")
+      const res = await productosApi.json()
+      setProductos(res.productos)
     } catch (error) {
       console.log(error)
     }
@@ -46,8 +35,8 @@ const HomePage = () => {
         <Row>
           {
             productos.map((producto) =>
-              <Col key={producto.id} sm="12" md="6" lg="4" className="my-3">
-                <CardC urlImagen={producto.image} textAlt={producto.description} id={producto.id} titulo={producto.title} precio={producto.price} descripcion={producto.description} />
+              <Col key={producto._id} sm="12" md="6" lg="4" className="my-3">
+                <CardC urlImagen={producto.imagen} textAlt={producto.descripcion} id={producto._id} titulo={producto.nombre} precio={producto.precio} descripcion={producto.descripcion} />
               </Col>
             )
           }
