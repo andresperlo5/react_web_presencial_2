@@ -2,17 +2,19 @@ import { useEffect, useState } from "react"
 import { Col, Container, Row } from "react-bootstrap"
 import CardC from "../components/card/CardC"
 import CarouselC from "../components/carousel/CarouselC"
+import clientAxios from "../helpers/clientAxios"
+import { cambiarTitulo } from "../helpers/cambiarTituloPagina"
 
 
 const HomePage = () => {
+  cambiarTitulo("home")
   const [productos, setProductos] = useState([])
   const [contador, setContador] = useState(0)
 
   const obtenerProductosApi = async () => {
     try {
-      const productosApi = await fetch("http://localhost:3001/productos")
-      const res = await productosApi.json()
-      setProductos(res.productos)
+      const res = await clientAxios.get("/productos")
+      setProductos(res.data.productos)
     } catch (error) {
       console.log(error)
     }

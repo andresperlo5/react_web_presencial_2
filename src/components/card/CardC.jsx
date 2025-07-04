@@ -4,11 +4,11 @@ import "./CardC.css"
 import { Link } from 'react-router';
 
 const CardC = ({ urlImagen, textAlt, id, titulo, descripcion, precio }) => {
-
+  console.log(urlImagen)
   return (
     <>
       <Card>
-        <Card.Img variant="top" src={urlImagen} alt={textAlt} />
+        <Card.Img variant="top" src={urlImagen.includes("public") ? `http://localhost:3001/public/${urlImagen}` : urlImagen} alt={textAlt} />
         <Card.Body>
           <Card.Title className='text-truncate'>{titulo}</Card.Title>
           <Card.Text>

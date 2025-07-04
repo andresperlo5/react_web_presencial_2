@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { Container } from 'react-bootstrap';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-import { useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import Swal from 'sweetalert2';
+import clientAxios, { configHeaders } from '../../helpers/clientAxios';
 
 const FormC = ({ idPage }) => {
   const navigate = useNavigate()
@@ -27,75 +28,80 @@ const FormC = ({ idPage }) => {
   }
 
   const handleClickFormRegister = async (ev) => {
-    ev.preventDefault()
-    const erroresReg = {}
-    const { nombreUsuario, emailUsuario, contrasenia, repContrasenia, terminosCondiciones } = formRegister
+    try {
+      ev.preventDefault()
+      const erroresReg = {}
+      const { nombreUsuario, emailUsuario, contrasenia, repContrasenia, terminosCondiciones } = formRegister
 
-    if (!nombreUsuario) {
-      erroresReg.nombreUsuario = "Error Campo USUARIO esta vacio"
-    }
+      if (!nombreUsuario) {
+        erroresReg.nombreUsuario = "Error Campo USUARIO esta vacio"
+      }
 
-    if (!emailUsuario) {
-      erroresReg.emailUsuario = "Error Campo EMAIL esta vacio"
-    }
+      if (!emailUsuario) {
+        erroresReg.emailUsuario = "Error Campo EMAIL esta vacio"
+      }
 
-    if (!contrasenia) {
-      erroresReg.contrasenia = "Error Campo CONTRASEÑA esta vacio"
-    }
+      if (!contrasenia) {
+        erroresReg.contrasenia = "Error Campo CONTRASEÑA esta vacio"
+      }
 
-    if (!repContrasenia) {
-      erroresReg.repContrasenia = "Error Campo REPETIR CONTRASEÑA esta vacio"
-    }
+      if (!repContrasenia) {
+        erroresReg.repContrasenia = "Error Campo REPETIR CONTRASEÑA esta vacio"
+      }
 
-    if (!terminosCondiciones) {
-      erroresReg.terminosCondiciones = "Error TERMINOS y CONDICIONES no lo aceptaste todavia"
-    }
+      if (!terminosCondiciones) {
+        erroresReg.terminosCondiciones = "Error TERMINOS y CONDICIONES no lo aceptaste todavia"
+      }
 
-    setErrores(erroresReg)
-    console.log(terminosCondiciones)
+      setErrores(erroresReg)
+      console.log(terminosCondiciones)
 
-    if (nombreUsuario && emailUsuario && contrasenia && repContrasenia && terminosCondiciones) {
-      if (contrasenia === repContrasenia) {
-        const usuario = await fetch("http://localhost:3001/usuarios", {
-          method: "POST",
-          headers: {
-            "content-type": "application/json"
-          },
-          body: JSON.stringify({
+      if (nombreUsuario && emailUsuario && contrasenia && repContrasenia && terminosCondiciones) {
+        if (contrasenia === repContrasenia) {
+          const usuario = await clientAxios.post("/usuarios", {
             nombreUsuario,
             emailUsuario,
             contrasenia
-          })
-        })
+          }, configHeaders)
 
-        const data = await usuario.json()
-        console.log(data)
+          if (usuario.status === 200) {
+            Swal.fire({
+              title: `${usuario.data.msg}`,
+              text: "En breve recibiras un email de confirmacion!",
+              icon: "success"
+            });
 
-        Swal.fire({
-          title: `${data.msg}`,
-          text: "En breve recibiras un email de confirmacion!",
-          icon: "success"
-        });
+            setFormRegister({
+              nombreUsuario: "",
+              emailUsuario: "",
+              contrasenia: "",
+              repContrasenia: "",
+              terminosCondiciones: false
+            })
 
-        setFormRegister({
-          nombreUsuario: "",
-          emailUsuario: "",
-          contrasenia: "",
-          repContrasenia: "",
-          terminosCondiciones: false
-        })
+            setTimeout(() => {
+              navigate("/login")
+            }, 1500);
+          }
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Las contraseñas no coinciden",
+          });
+        }
+      }
 
-        setTimeout(() => {
-          navigate("/login")
-        }, 1500);
-
-      } else {
+    } catch (error) {
+      console.log(error)
+      if (error) {
         Swal.fire({
           icon: "error",
-          title: "Las contraseñas no coinciden",
+          title: `${error.response.data.msg}`,
         });
       }
+
     }
+
   }
 
   const handleChangeFormLogin = (ev) => {
@@ -117,28 +123,23 @@ const FormC = ({ idPage }) => {
     }
 
     if (nombreUsuario && contrasenia) {
-      const usuarioLogueado = await fetch("http://localhost:3001/usuarios/login", {
-        method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
-        body: JSON.stringify({
-          nombreUsuario,
-          contrasenia
-        })
-      })
+      const usuarioLogueado = await clientAxios.post("/usuarios/login", {
+        nombreUsuario,
+        contrasenia
+      }, configHeaders)
 
-      const data = await usuarioLogueado.json()
-      sessionStorage.setItem("token", JSON.stringify(data.token))
-      sessionStorage.setItem("rol", JSON.stringify(data.rol))
+
+
+      sessionStorage.setItem("token", JSON.stringify(usuarioLogueado.data.token))
+      sessionStorage.setItem("rol", JSON.stringify(usuarioLogueado.data.rol))
 
       Swal.fire({
         icon: "success",
-        title: `${data.msg}`,
+        title: `${usuarioLogueado.data.msg}`,
       });
 
 
-      if (data.rol === "usuario") {
+      if (usuarioLogueado.data.rol === "usuario") {
         setTimeout(() => {
           navigate("/user")
         }, 1000);
@@ -206,6 +207,10 @@ const FormC = ({ idPage }) => {
               <p className='text-danger'>{errores.terminosCondiciones}</p>
             }
           </Form.Group>
+        }
+        {
+          idPage === "login" &&
+          <p>Si te olvidaste tu contraseña. Haz click <Link to={"/recoveryPassEmail"}>aqui</Link></p>
         }
         <Container className='text-center'>
           <Button variant="primary" type="submit" onClick={idPage === "register" ? handleClickFormRegister : handleClickFormLogin}>

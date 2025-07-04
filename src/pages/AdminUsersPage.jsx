@@ -1,15 +1,14 @@
 import { Button, Container } from 'react-bootstrap'
 import TableC from '../components/table/TableC'
 import { useEffect, useState } from 'react'
+import clientAxios, { configHeaders } from '../helpers/clientAxios'
 
 const AdminUsersPage = () => {
   const [usuarios, setUsuarios] = useState([])
 
   const obtenerTodosLosUsuarios = async () => {
-    const usuarios = await fetch("http://localhost:3001/usuarios")
-    const data = await usuarios.json()
-    console.log(data)
-    setUsuarios(data.usuarios)
+    const usuarios = await clientAxios.get("/usuarios", configHeaders)
+    setUsuarios(usuarios.data.usuarios)
   }
 
 

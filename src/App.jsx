@@ -11,6 +11,8 @@ import AdminUsersPage from "./pages/AdminUsersPage"
 import AdminCreateEditProducts from "./pages/AdminCreateEditProducts"
 import UserPage from "./pages/UserPage"
 import PrivateRoute from "./components/privateroute/PrivateRoute"
+import RecoveryPassPageEmail from "./pages/RecoveryPassPageEmail"
+import RecoveryPassPageForm from "./pages/RecoveryPassPageForm"
 //use =  Hook = Funcion 
 
 const App = () => {
@@ -40,6 +42,8 @@ const App = () => {
             </PrivateRoute>
           } />
 
+          <Route path="/recoveryPassForm" element={<RecoveryPassPageForm />} />
+          <Route path="/recoveryPassEmail" element={<RecoveryPassPageEmail />} />
           <Route path="/productDetail/:id" element={<ProductDetailPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/login" element={<LoginPage />} />

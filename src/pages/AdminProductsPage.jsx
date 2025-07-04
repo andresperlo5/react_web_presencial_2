@@ -2,16 +2,15 @@ import { Button, Container } from 'react-bootstrap'
 import TableC from '../components/table/TableC'
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router'
+import clientAxios, { configHeaders } from '../helpers/clientAxios'
 
 const AdminProductsPage = () => {
   const [productos, setProductos] = useState([])
   const usuarioLogueado = JSON.parse(sessionStorage.getItem("token")) || null
 
   const obtenerTodosLosProductos = async () => {
-    const productos = await fetch("http://localhost:3001/productos")
-    const data = await productos.json()
-    console.log(data.productos)
-    setProductos(data.productos)
+    const productos = await clientAxios.get("/productos", configHeaders)
+    setProductos(productos.data.productos)
   }
 
   useEffect(() => {

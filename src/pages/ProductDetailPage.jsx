@@ -3,6 +3,7 @@ import { Button, Col, Container, Row } from "react-bootstrap"
 import { useNavigate, useParams } from "react-router"
 import "./css/ProductoDetailPage.css"
 import Swal from "sweetalert2"
+import clientAxios, { configHeaders } from "../helpers/clientAxios"
 
 
 const ProductDetailPage = () => {
@@ -12,17 +13,17 @@ const ProductDetailPage = () => {
 
   const obtenerProducto = async () => {
     try {
-      const producto = await fetch(`http://localhost:3001/productos/${id}`)
-      const data = await producto.json()
-      console.log(data)
-      setProducto(data.producto)
+      const producto = await clientAxios.get(`productos/${id}`, configHeaders)
+      setProducto(producto.data.producto)
     } catch (error) {
       console.log(error)
     }
   }
 
-  const handleClickCart = (ev) => {
-    const usuarioLogueado = JSON.parse(sessionStorage.getItem("usuario")) || null
+  const handleClickCart = async (ev, idProducto) => {
+    ev.preventDefault()
+    const usuarioLogueado = JSON.parse(sessionStorage.getItem("token")) || null
+    console.log(usuarioLogueado)
 
     if (!usuarioLogueado) {
       Swal.fire({
@@ -30,15 +31,21 @@ const ProductDetailPage = () => {
         title: "Oops...",
         text: "Debes iniciar sesion para poder comprar",
       });
-
+      s
       setTimeout(() => {
         navigate("/login")
       }, 500);
     }
+
+    const res = await clientAxios.put(`/carritos/agregarProducto/${idProducto}`, {}, configHeaders)
+    console.log(res)
+
+
   }
 
   const handleClickPay = (ev) => {
-    const usuarioLogueado = JSON.parse(sessionStorage.getItem("usuario")) || null
+    ev.preventDefault()
+    const usuarioLogueado = JSON.parse(sessionStorage.getItem("token")) || null
 
     if (!usuarioLogueado) {
       Swal.fire({
@@ -68,7 +75,7 @@ const ProductDetailPage = () => {
             <h2>{producto.nombre}</h2>
             <p>${producto.precio}</p>
             <p>{producto.descripcion}</p>
-            <Button variant="warning" className="me-2" onClick={handleClickCart}>Añadir Carrito</Button>
+            <Button variant="warning" className="me-2" onClick={(ev) => handleClickCart(ev, producto._id)}>Añadir Carrito</Button>
             <Button variant="success" onClick={handleClickPay}>Comprar</Button>
           </Col>
         </Row>
