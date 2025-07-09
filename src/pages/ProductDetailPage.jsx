@@ -37,8 +37,28 @@ const ProductDetailPage = () => {
       }, 500);
     }
 
-    const res = await clientAxios.put(`/carritos/agregarProducto/${idProducto}`, {}, configHeaders)
-    console.log(res)
+    try {
+      const res = await clientAxios.put(`/carritos/agregarProducto/${idProducto}`, {}, configHeaders)
+      console.log(res)
+
+      if (res.status === 200) {
+        Swal.fire({
+          icon: "success",
+          title: "Producto cargado con exito en el carrito",
+
+        });
+      }
+    } catch (error) {
+      if (error.status === 422) {
+        Swal.fire({
+          icon: "error",
+          title: `${error.response.data.msg}`,
+
+        });
+      }
+    }
+
+
 
 
   }

@@ -32,9 +32,9 @@ const NavbarC = () => {
                 ?
                 <Nav className="ms-auto">
                   <NavLink className={"nav-link"} to="/user">Inicio</NavLink>
-                  <NavLink className={"nav-link"} to="/aboutUs">Carrito</NavLink>
-                  <NavLink className={"nav-link"} to="/contact">Galeria</NavLink>
-                  <NavLink className={"nav-link"} to="/contact">Favoritos</NavLink>
+                  <NavLink className={"nav-link"} to="/user/cart">Carrito</NavLink>
+                  <NavLink className={"nav-link"} to="/user/galery">Galeria</NavLink>
+                  <NavLink className={"nav-link"} to="/user/favs">Favoritos</NavLink>
                 </Nav>
                 :
                 token && usuariosLogRol === "admin"

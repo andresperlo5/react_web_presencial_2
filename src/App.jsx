@@ -13,6 +13,7 @@ import UserPage from "./pages/UserPage"
 import PrivateRoute from "./components/privateroute/PrivateRoute"
 import RecoveryPassPageEmail from "./pages/RecoveryPassPageEmail"
 import RecoveryPassPageForm from "./pages/RecoveryPassPageForm"
+import CartPage from "./pages/CartPage"
 //use =  Hook = Funcion 
 
 const App = () => {
@@ -42,6 +43,7 @@ const App = () => {
             </PrivateRoute>
           } />
 
+          <Route path="/user/cart" element={<CartPage />} />
           <Route path="/recoveryPassForm" element={<RecoveryPassPageForm />} />
           <Route path="/recoveryPassEmail" element={<RecoveryPassPageEmail />} />
           <Route path="/productDetail/:id" element={<ProductDetailPage />} />
