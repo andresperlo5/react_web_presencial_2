@@ -4,6 +4,7 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import { useNavigate } from 'react-router';
 import Swal from 'sweetalert2';
+import clientAxios, { configHeaders, configHeadersImagen } from '../helpers/clientAxios';
 
 const AdminCreateEditProducts = () => {
   const navigate = useNavigate()
@@ -13,36 +14,73 @@ const AdminCreateEditProducts = () => {
     title: "",
     price: 0,
     description: "",
-    image: ""
   })
 
-  const obtenerProductoPorId = () => {
-    const productosLs = JSON.parse(localStorage.getItem("productos")) || []
-    const producto = productosLs.find((prod) => prod.id === Number(id))
-    console.log(producto)
-    setFormCreateProduct(producto)
+  const [image, setImage] = useState(null)
+
+  const obtenerProductoPorId = async () => {
+    /*  const productosLs = JSON.parse(localStorage.getItem("productos")) || []
+     const producto = productosLs.find((prod) => prod.id === Number(id))
+     console.log(producto) */
+    const res = await clientAxios.get(`/productos/${id}`)
+    console.log(res.data)
+    setFormCreateProduct({
+      title: res.data.producto.nombre,
+      price: res.data.producto.precio,
+      description: res.data.producto.descripcion
+    })
+    setImage(res.data.producto.imagen)
   }
 
   const handleChangeFormCreateProduct = (ev) => {
-    setFormCreateProduct({ ...formCreateProduct, [ev.target.name]: ev.target.value })
+    if (ev.target.type === "file") {
+      setFormCreateProduct({ ...formCreateProduct, [ev.target.name]: ev.target.files[0] })
+    } else {
+      setFormCreateProduct({ ...formCreateProduct, [ev.target.name]: ev.target.value })
+    }
   }
 
-  const handleClickFormCreateProduct = (ev) => {
+  const handleClickFormCreateProduct = async (ev) => {
     ev.preventDefault()
-    const productosLs = JSON.parse(localStorage.getItem("productos")) || []
+    console.log("1")
+    // const productosLs = JSON.parse(localStorage.getItem("productos")) || []
 
     //hacer validaciones
 
-    if (formCreateProduct.title && formCreateProduct.price && formCreateProduct.image && formCreateProduct.description) {
-      const nuevoProducto = {
-        id: productosLs[productosLs.length - 1]?.id + 1 || 1,
-        ...formCreateProduct
+    console.log(formCreateProduct)
+    if (formCreateProduct.title && formCreateProduct.price && image && formCreateProduct.description) {
+      /*   const nuevoProducto = {
+          id: productosLs[productosLs.length - 1]?.id + 1 || 1,
+          ...formCreateProduct
+        }
+  
+        console.log(nuevoProducto)
+  
+        productosLs.push(nuevoProducto)
+        localStorage.setItem("productos", JSON.stringify(productosLs)) */
+
+
+
+      const res = await clientAxios.post("/productos", {
+        nombre: formCreateProduct.title,
+        precio: formCreateProduct.price,
+        descripcion: formCreateProduct.description
+      }, configHeaders)
+
+      if (res.status === 201) {
+
+        const formData = new FormData()
+        formData.append("imagen", image)
+        if (image) {
+
+          const formData = new FormData()
+          formData.append("imagen", image)
+
+          const resBack = await clientAxios.put(`/productos/addEditImage/${res.data.idProducto}`, formData, configHeadersImagen)
+
+          console.log(resBack)
+        }
       }
-
-      console.log(nuevoProducto)
-
-      productosLs.push(nuevoProducto)
-      localStorage.setItem("productos", JSON.stringify(productosLs))
 
       Swal.fire({
         title: "Producto creado con exito!",
@@ -128,7 +166,7 @@ const AdminCreateEditProducts = () => {
           </Form.Group>
           <Form.Group className="mb-3" controlId="formBasicPassword">
             <Form.Label>Imagen</Form.Label>
-            <Form.Control type="text" name='image' value={formCreateProduct.image} onChange={handleChangeFormCreateProduct} />
+            <Form.Control type="file" name='image' onChange={(ev) => setImage(ev.target.files[0])} />
           </Form.Group>
 
           <div className='text-center'>

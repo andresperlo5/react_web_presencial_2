@@ -121,7 +121,7 @@ const TableC = ({ idPage, array, obtenerTodosLosProductos, usuarioLogueado }) =>
                     <img src={element.imagen} alt="" width={50} />
                   </td>
                   <td className='w-50'>
-                    <Link className='btn btn-warning' to={usuarioLogueado ? `/admin/products/createEdit?id=${element.id}` : "#"} variant='warning'>Editar</Link>
+                    <Link className='btn btn-warning' to={usuarioLogueado ? `/admin/products/createEdit?id=${element._id}` : "#"} variant='warning'>Editar</Link>
                     <Button variant='danger' className='mx-3' onClick={() => handleClickDeleteProduct(element.id)}>Eliminar</Button>
                     <Button variant={element.status === "enabled" ? "info" : "success"} onClick={() => handleClickEnabledDisabledProduct(element.id)}>{
                       element.status === "enabled" ? "Deshabilitar" : "Habilitar"
