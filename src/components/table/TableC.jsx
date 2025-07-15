@@ -2,9 +2,12 @@ import { Button } from 'react-bootstrap';
 import Table from 'react-bootstrap/Table';
 import { Link } from 'react-router';
 import Swal from 'sweetalert2';
+import clientAxios from '../../helpers/clientAxios';
 
 const TableC = ({ idPage, array, obtenerTodosLosProductos, usuarioLogueado }) => {
+  console.log(array)
   const handleClickDeleteProduct = (idProducto) => {
+    console.log(idProducto)
     if (usuarioLogueado) {
       Swal.fire({
         title: "Estas seguro de que quieres eliminar a este producto?",
@@ -15,20 +18,18 @@ const TableC = ({ idPage, array, obtenerTodosLosProductos, usuarioLogueado }) =>
         cancelButtonColor: "#d33",
         confirmButtonText: "SI, estoy seguro!",
         cancelButtonText: "No!"
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
-          const productoLs = JSON.parse(localStorage.getItem("productos")) || []
-          const productoIndex = productoLs.findIndex((prod) => prod.id === Number(idProducto))
+          const res = await clientAxios.delete(`/productos/${idProducto}`)
+          console.log(res)
+          if (res.status === 200) {
+            Swal.fire({
+              title: "Producto eliminado con exito!",
+              icon: "success"
+            });
 
-          productoLs.splice(productoIndex, 1)
-          localStorage.setItem("productos", JSON.stringify(productoLs))
-
-          Swal.fire({
-            title: "Producto eliminado con exito!",
-            icon: "success"
-          });
-
-          obtenerTodosLosProductos()
+            obtenerTodosLosProductos()
+          }
         }
       });
     }
@@ -36,35 +37,41 @@ const TableC = ({ idPage, array, obtenerTodosLosProductos, usuarioLogueado }) =>
   }
 
 
-  const handleClickEnabledDisabledProduct = (idProducto) => {
+  const handleClickEnabledDisabledProduct = (idProducto, estado) => {
     if (usuarioLogueado) {
-      const productoLs = JSON.parse(localStorage.getItem("productos")) || []
-      const producto = productoLs.find((prod) => prod.id === Number(idProducto))
+      /*   const productoLs = JSON.parse(localStorage.getItem("productos")) || []
+        const producto = productoLs.find((prod) => prod.id === Number(idProducto)) */
       Swal.fire({
-        title: `Estas seguro de que quieres ${producto.status === "enabled" ? "deshabilitar" : "habilitar"} a este producto?`,
+        title: `Estas seguro de ${estado === true ? "deshabilitar" : "habilitar"
+          } el producto ? `,
         icon: "warning",
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Si, estoy seguro!"
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
 
+          const res = await clientAxios.put(`/productos/changeState/${idProducto}`)
+          if (res.status === 200) {
+            Swal.fire({
+              title: `${res.data.msg}`,
+              icon: "success"
+            });
 
-          if (producto.status === "enabled") {
-            producto.status = "disabled"
-          } else {
-            producto.status = "enabled"
+            obtenerTodosLosProductos()
           }
-
-          localStorage.setItem("productos", JSON.stringify(productoLs))
-
-          Swal.fire({
-            title: `Producto ${producto.status === "enabled" ? "habilitado" : "deshabilitado"} con exito`,
-            icon: "success"
-          });
-
-          obtenerTodosLosProductos()
+          /*    if (producto.status === "enabled") {
+               producto.status = "disabled"
+             } else {
+               producto.status = "enabled"
+             }
+   
+             localStorage.setItem("productos", JSON.stringify(productoLs))
+   
+            
+   
+             obtenerTodosLosProductos() */
         }
       });
     }
@@ -111,7 +118,6 @@ const TableC = ({ idPage, array, obtenerTodosLosProductos, usuarioLogueado }) =>
                   </td>
                 </tr>
                 :
-                element.habilitado === false &&
                 <tr key={element._id}>
                   <td>{i + 1}</td>
                   <td className='w-25'>{element.nombre}</td>
@@ -121,10 +127,10 @@ const TableC = ({ idPage, array, obtenerTodosLosProductos, usuarioLogueado }) =>
                     <img src={element.imagen} alt="" width={50} />
                   </td>
                   <td className='w-50'>
-                    <Link className='btn btn-warning' to={usuarioLogueado ? `/admin/products/createEdit?id=${element._id}` : "#"} variant='warning'>Editar</Link>
-                    <Button variant='danger' className='mx-3' onClick={() => handleClickDeleteProduct(element.id)}>Eliminar</Button>
-                    <Button variant={element.status === "enabled" ? "info" : "success"} onClick={() => handleClickEnabledDisabledProduct(element.id)}>{
-                      element.status === "enabled" ? "Deshabilitar" : "Habilitar"
+                    <Link className='btn btn-warning' to={usuarioLogueado ? `/ admin / products / createEdit ? id = ${element._id}` : "#"} variant='warning'>Editar</Link>
+                    <Button variant='danger' className='mx-3' onClick={() => handleClickDeleteProduct(element._id)}>Eliminar</Button>
+                    <Button variant={element.habilitado === true ? "info" : "success"} onClick={() => handleClickEnabledDisabledProduct(element._id, element.habilitado)}>{
+                      element.habilitado === true ? "Deshabilitar" : "Habilitar"
                     }</Button>
                   </td>
                 </tr>
